@@ -117,18 +117,21 @@ div[data-testid="stSidebarNav"] {
 /* ── Metric Cards (Workspace Health) ──────────────────────────────── */
 .metric-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
     margin-bottom: 24px;
 }
 .metric-card {
     background: #1e293b;
     border: 1px solid #334155;
     border-radius: 12px;
-    padding: 22px 20px;
+    padding: 18px 16px;
     text-align: left;
     position: relative;
     overflow: hidden;
+}
+.js-plotly-plot .plotly .main-svg {
+    overflow: visible !important;
 }
 .metric-card::before {
     content: '';

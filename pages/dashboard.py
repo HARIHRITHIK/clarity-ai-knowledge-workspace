@@ -91,21 +91,31 @@ def render():
             fig = go.Figure(data=[go.Pie(
                 labels=list(category_counts.keys()),
                 values=list(category_counts.values()),
-                hole=0.55,
+                hole=0.58,
                 marker=dict(colors=colors, line=dict(color="#0f172a", width=2)),
-                textinfo="label+percent",
-                textfont=dict(size=11, color="#f1f5f9"),
+                textinfo="percent",
+                textposition="inside",
+                insidetextfont=dict(size=12, color="#ffffff", family="Inter"),
+                hovertemplate="<b>%{label}</b><br>%{value} document(s) (%{percent})<extra></extra>",
             )])
             fig.update_layout(
-                showlegend=False,
-                margin=dict(t=10, b=10, l=10, r=10),
-                height=220,
+                showlegend=True,
+                legend=dict(
+                    orientation="v",
+                    yanchor="middle",
+                    y=0.5,
+                    xanchor="left",
+                    x=1.02,
+                    font=dict(family="Inter", size=11, color="#cbd5e1"),
+                ),
+                margin=dict(t=15, b=15, l=15, r=10),
+                height=260,
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 font=dict(family="Inter", color="#94a3b8"),
                 annotations=[dict(
-                    text="Categories",
-                    font=dict(size=12, color="#94a3b8"),
+                    text=f"<b>{len(processed)}</b><br><span style='font-size:10px;color:#64748b'>DOCS</span>",
+                    font=dict(size=14, color="#f1f5f9", family="Inter"),
                     showarrow=False,
                 )],
             )
@@ -120,27 +130,38 @@ def render():
         # Word count per document
         with col2:
             sorted_docs = sorted(processed, key=lambda d: d.word_count, reverse=True)[:8]
-            names  = [d.display_name[:20] + ("…" if len(d.display_name) > 20 else "") for d in sorted_docs]
+            names  = [d.display_name[:18] + ("…" if len(d.display_name) > 18 else "") for d in sorted_docs]
             counts = [d.word_count for d in sorted_docs]
             bar_colors = [config.CATEGORY_COLORS.get(d.category, "#64748b") for d in sorted_docs]
+            max_c = max(counts) if counts else 1000
 
             fig2 = go.Figure(go.Bar(
                 x=counts, y=names,
                 orientation="h",
-                marker=dict(color=bar_colors, opacity=0.85),
-                text=[f"{c:,}" for c in counts],
+                marker=dict(color=bar_colors, opacity=0.9),
+                text=[f"{c:,} words" for c in counts],
                 textposition="outside",
-                textfont=dict(size=10, color="#94a3b8"),
+                textfont=dict(size=11, color="#cbd5e1", family="Inter"),
+                hovertemplate="<b>%{y}</b><br>%{x:,} words<extra></extra>",
             ))
             fig2.update_layout(
-                margin=dict(t=10, b=10, l=10, r=60),
-                height=220,
+                margin=dict(t=15, b=15, l=10, r=40),
+                height=260,
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 font=dict(family="Inter", color="#94a3b8"),
-                xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-                yaxis=dict(showgrid=False, tickfont=dict(size=11)),
-                bargap=0.25,
+                xaxis=dict(
+                    showgrid=False,
+                    showticklabels=False,
+                    zeroline=False,
+                    range=[0, max_c * 1.38],  # Headroom so text labels never crop
+                ),
+                yaxis=dict(
+                    showgrid=False,
+                    tickfont=dict(size=11, color="#cbd5e1", family="Inter"),
+                    autorange="reversed",  # Largest on top
+                ),
+                bargap=0.28,
             )
             st.markdown(
                 '<div style="font-size:12px;font-weight:600;color:#64748b;'
@@ -180,7 +201,7 @@ def _render_doc_row(doc):
     icon = config.CATEGORY_ICONS.get(doc.category, "📄")
     cat_color = config.CATEGORY_COLORS.get(doc.category, "#64748b")
 
-    col_main, col_action = st.columns([6, 1])
+    col_main, col_action = st.columns([5, 1.5])
     with col_main:
         status = ""
         if doc.has_error:
@@ -209,7 +230,7 @@ def _render_doc_row(doc):
 
     with col_action:
         st.markdown("<div style='margin-top:10px'></div>", unsafe_allow_html=True)
-        col_v, col_d = st.columns([3, 1])
+        col_v, col_d = st.columns([2.5, 1])
         with col_v:
             if st.button("View →", key=f"view_{doc.id}", type="secondary", use_container_width=True):
                 Workspace.navigate("document", doc.id)
