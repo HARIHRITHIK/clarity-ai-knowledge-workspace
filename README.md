@@ -2,290 +2,207 @@
 
 > **Turn document chaos into organized intelligence.**
 
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.31+-FF4B4B?style=flat&logo=streamlit&logoColor=white)](https://streamlit.io)
-[![License](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen?style=flat)]()
+[![CI](https://github.com/HARIHRITHIK/clarity-ai-knowledge-workspace/actions/workflows/ci.yml/badge.svg)](https://github.com/HARIHRITHIK/clarity-ai-knowledge-workspace/actions)
+[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.39+-FF4B4B?style=flat&logo=streamlit&logoColor=white)](https://streamlit.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
+
+[**⚡ 2-Minute Demo Guide**](DEMO.md) • [**🏛️ System Architecture**](docs/ARCHITECTURE.md) • [**📁 Sample Corpus**](sample_data/)
 
 ---
 
-## The Problem
+## 📌 The Problem
 
-Business teams drown in documents.
+Business teams accumulate thousands of unstructured PDFs, contracts, meeting notes, reports, and spreadsheets. Retrieving critical context requires:
+- Manually reading through lengthy documents
+- Brittle keyword search that misses semantic context
+- Maintaining internal wikis that go stale
+- Relying on tribal knowledge
 
-A mid-size company accumulates thousands of PDFs, contracts, meeting notes, reports, and spreadsheets. Finding information inside them requires:
-
-- Manually reading every document
-- Keyword searching that misses context
-- Manually maintaining wikis that go stale
-- Waiting for the one person who "knows where that is"
-
-The result: critical information is invisible, decisions are made on incomplete context, and time is wasted on information retrieval instead of analysis.
-
----
-
-## The Solution
-
-**Clarity** is an AI-powered knowledge workspace that automatically processes your business documents and makes their content instantly accessible.
-
-Upload a document. Clarity classifies it, summarizes it, extracts named entities (people, organizations, dates, amounts), indexes it for semantic search, and makes it available for one-click report generation — all without writing a single query or reading a single page.
+**Clarity** is a production-grade document intelligence workspace that automatically ingests business files and transforms them into an organized, searchable knowledge base—with zero external API dependencies or cloud costs.
 
 ```
-Upload → AI Analyzes → Knowledge Organized → Search Everything → Generate Reports
+Upload Files ➔ AI Analyzes ➔ Knowledge Organized ➔ Semantic Search ➔ Executive Reports
 ```
-
-One sentence: *Upload your business documents and instantly understand what's in them.*
 
 ---
 
-## Features
+## 🏛️ System Architecture
+
+```
+                 ┌─────────────────┐
+                 │  PDF / DOCX /   │
+                 │ TXT / CSV       │
+                 └────────┬────────┘
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │ Text Extraction │
+                 │ (Abstract Fact.)│
+                 └────────┬────────┘
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │ Classification  │
+                 │ (TF-IDF Scorer) │
+                 └────────┬────────┘
+                          │
+              ┌───────────┴───────────┐
+              ▼           ▼           ▼
+          Summarize      NER      Vector Search
+          (LSA-TFIDF)  (spaCy)    (all-MiniLM)
+              │           │           │
+              └───────────┼───────────┘
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │ Core Knowledge  │
+                 │ Repository Layer│
+                 └────────┬────────┘
+                          │
+                 ┌────────┴────────┐
+                 ▼                 ▼
+          ┌─────────────┐   ┌─────────────┐
+          │ Interactive │   │ Standalone  │
+          │ Dashboard   │   │ HTML Report │
+          └─────────────┘   └─────────────┘
+```
+
+---
+
+## 💡 Engineering Decisions & Trade-Offs
+
+* **Offline-First & Zero API Dependency**:
+  Running 100% on local CPU models (spaCy, scikit-learn, sentence-transformers) ensures zero API costs, zero network latency, 100% data privacy, and immunity to third-party rate limits.
+* **Extractive Summarization over Generative LLMs**:
+  Scores and selects the top factual sentences directly from source text using TF-IDF term matrices. This guarantees **zero generative hallucination** for financial figures, legal clauses, and dates.
+* **Abstract Factory File Processors**:
+  Text extraction (`PDFProcessor`, `DOCXProcessor`, `TextProcessor`) is fully decoupled from pipeline orchestration, allowing new formats to be added without modifying core business logic.
+* **Graceful Degradation**:
+  Semantic search leverages `sentence-transformers` vector embeddings with automated fallback to TF-IDF cosine similarity if weights are unavailable. Every component is designed to never crash.
+
+---
+
+## ✨ Features
 
 ### 📊 Workspace Health Dashboard
-A live intelligence panel showing everything your workspace contains at a glance.
+Aggregates enterprise-level intelligence across the document library:
+* **Documents & Word Counts**: Total library inventory.
+* **Auto-Detected Categories**: Financial Reports, Meeting Notes, Contracts, HR Policies, Customer Feedback, Project Briefs.
+* **Named Entities**: Unique people, organizations, dates, and amounts.
+* **Interactive Visualizations**: Category distribution donut chart and document size bar chart (Plotly).
 
-| Metric | What It Shows |
-|--------|---------------|
-| Documents | Total documents in workspace |
-| Categories | Auto-detected document types |
-| People Mentioned | Unique named individuals across all documents |
-| Organizations | Companies and institutions referenced |
-| Key Facts | Total AI-extracted facts across the workspace |
-| Search Coverage | % of documents indexed for semantic search |
+### 🤖 5-Stage Document Pipeline
+Every uploaded file undergoes an isolated 5-stage transformation:
+1. **Parse**: Text extraction with encoding fallbacks (PDF, DOCX, TXT, CSV).
+2. **Classify**: Deterministic keyword scoring against curated business domain models.
+3. **Summarize**: 4-sentence extractive executive summary + top 6 key facts.
+4. **Extract Entities**: spaCy neural NER with regex pattern supplement (`PERSON`, `ORG`, `DATE`, `MONEY`, `GPE`).
+5. **Index**: Dense vector embeddings with confidence rating (`High`, `Medium`, `Low`).
 
-### 🤖 Automatic Document Intelligence
-Every uploaded document goes through a 5-stage pipeline:
-1. **Parse** — Extract text from PDF, DOCX, TXT, or CSV
-2. **Classify** — Detect document type (Financial Report, Meeting Notes, Contract, etc.)
-3. **Summarize** — Generate a 3–5 sentence business summary using extractive NLP
-4. **Extract** — Identify people, organizations, dates, amounts, and locations (spaCy)
-5. **Index** — Build a semantic embedding for search (sentence-transformers)
-
-### 🔍 Semantic Search
-Search across your entire document workspace using natural language — not just keywords.
-
-- Finds relevant content even when exact words don't match
-- Results ranked by relevance with **High / Medium / Low** confidence labels
-- Clickable results open the source document instantly
-- Falls back to TF-IDF search if vector model is unavailable (graceful degradation)
-
-### 📋 Report Builder
-Select any combination of documents and generate a professional, print-ready HTML report with one click.
-
-- Beautifully styled with professional typography
-- Includes: document summaries, key facts, extracted entities, workspace statistics
-- Fully self-contained HTML — no external dependencies, shareable by email
-- Works as a PDF when printed from the browser
-
-### 🚀 Demo Workspace
-A pre-loaded **Acme Corporation** enterprise document set ships with the application:
-
-| Document | Type |
-|----------|------|
-| Q4 2024 Financial Report | Financial Report |
-| Board Meeting Minutes | Meeting Notes |
-| Employee Handbook 2025 | HR Policy |
-| TechSupply Solutions Contract | Contract / Legal |
-| Customer Feedback Report Q4 | Customer Feedback |
-
-A recruiter can click **Open Demo Workspace** and be exploring real content in under 30 seconds — no uploads required.
+### 📄 Executive HTML Report Generator
+Generates standalone, print-ready HTML executive reports with complete metadata, summaries, key facts, and entity chips—sanitized against XSS injection and printable as PDF.
 
 ---
 
-## Architecture
+## 📂 Project Structure
 
 ```
 clarity/
-├── app.py                    ← Entry point, router, home screen
-├── config.py                 ← All tunable constants (one place)
+├── app.py                    ← Streamlit application entry point & router
+├── config.py                 ← Centralized tunable constants
 │
 ├── core/
 │   ├── document.py           ← Document data model (progressive hydration)
-│   ├── workspace.py          ← Session state repository (DB-swappable)
-│   └── pipeline.py           ← 5-stage orchestrator
+│   ├── workspace.py          ← In-memory repository layer (DB-swappable)
+│   └── pipeline.py           ← 5-stage processing orchestrator
 │
-├── processors/               ← File format handlers (Abstract Factory pattern)
-│   ├── base.py               ← BaseProcessor + factory function
-│   ├── pdf_processor.py      ← pypdf
-│   ├── docx_processor.py     ← python-docx
-│   └── text_processor.py     ← TXT + CSV (pandas)
+├── processors/               ← File handlers (Abstract Factory pattern)
+│   ├── base.py               ← BaseProcessor & factory registry
+│   ├── pdf_processor.py      ← pypdf integration
+│   ├── docx_processor.py     ← python-docx integration
+│   └── text_processor.py     ← TXT & CSV tabular parser
 │
-├── intelligence/             ← AI and NLP layer
-│   ├── classifier.py         ← TF-IDF keyword classification (offline)
-│   ├── summarizer.py         ← Extractive summarization (LSA-inspired)
+├── intelligence/             ← AI & NLP components
+│   ├── classifier.py         ← TF-IDF keyword classification
+│   ├── summarizer.py         ← LSA extractive sentence ranking
 │   ├── extractor.py          ← spaCy NER + regex fallback
-│   └── search.py             ← Semantic search (sentence-transformers + TF-IDF fallback)
+│   └── search.py             ← Vector search + TF-IDF fallback
 │
-├── pages/                    ← UI pages (one module per screen)
-│   ├── dashboard.py          ← Workspace Health + document library
-│   ├── upload.py             ← Upload + demo loader
-│   ├── document_view.py      ← Detail: summary, entities, text, export
-│   ├── search_page.py        ← Semantic search interface
-│   └── report.py             ← Report builder + HTML generation
+├── pages/                    ← Modular UI screens
+│   ├── dashboard.py          ← Workspace Health & library management
+│   ├── upload.py             ← Multi-format uploader & demo loader
+│   ├── document_view.py      ← Document detail, summary, entities & export
+│   ├── search_page.py        ← Semantic search & confidence filters
+│   └── report.py             ← HTML report builder & live preview
 │
-├── utils/
-│   └── exporter.py           ← HTML report generator
+├── sample_data/              ← Multi-format sample files for testing & demos
+│   ├── company_report.pdf
+│   ├── employee_policy.docx
+│   ├── project_notes.txt
+│   └── sales_summary.csv
 │
-├── assets/
-│   └── styles.py             ← Complete CSS design system
+├── tests/                    ← Automated pytest suite
+│   ├── test_processors.py
+│   ├── test_intelligence.py
+│   ├── test_pipeline.py
+│   └── test_exporter.py
 │
-└── sample_docs/              ← Acme Corporation demo documents
-    ├── acme_q4_report.txt
-    ├── board_meeting_notes.txt
-    ├── employee_handbook.txt
-    ├── vendor_contract.txt
-    └── customer_feedback.txt
+├── scripts/
+│   ├── benchmark.py          ← Reproducible throughput & latency benchmark
+│   └── generate_sample_data.py
+│
+├── docs/
+│   └── ARCHITECTURE.md       ← In-depth architectural documentation
+│
+└── DEMO.md                   ← Recruiter 2-minute walkthrough guide
 ```
 
-### Key Design Decisions
-
-**Why no chatbot?** The value of knowledge management isn't answering questions — it's reducing the need to ask them. Clarity surfaces structure automatically. This is also a deliberate differentiation from the hundreds of "chat with your PDF" portfolio projects that exist.
-
-**Why Streamlit?** Single process, zero infrastructure, free cloud deployment, Python-only codebase. Streamlit is production software used by data teams at Databricks, Snowflake, and hundreds of enterprises. It is not a toy.
-
-**Why no OpenAI API?** Calling an API is not AI engineering. The intelligence in Clarity is built from composable, understood components — a classifier you can explain, a summarizer you can debug, and a search engine whose ranking you can reason about.
-
-**Why graceful degradation?** Every intelligence module has a fallback. The app never crashes because a model isn't installed. This is the correct production approach.
-
 ---
 
-## Tech Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| UI | Streamlit 1.31+ | Application framework |
-| Semantic Search | sentence-transformers (all-MiniLM-L6-v2) | Vector embeddings, 80MB, CPU-only |
-| Entity Extraction | spaCy (en_core_web_sm) | Named entity recognition |
-| Summarization | scikit-learn (TF-IDF) | Extractive sentence scoring |
-| Classification | scikit-learn (TF-IDF) | Document type detection |
-| PDF Parsing | pypdf | PDF text extraction |
-| DOCX Parsing | python-docx | Word document extraction |
-| Data | pandas | CSV processing |
-| Charts | plotly | Interactive visualizations |
-
-**No paid APIs. No GPU. No internet required after install.**
-
----
-
-## Installation
+## 🚀 Quickstart
 
 ### Prerequisites
-- Python 3.10 or higher
+- Python 3.10 or 3.11
 - pip
 
-### Setup
-
+### 1. Clone & Setup
 ```bash
-# 1. Clone the repository
 git clone https://github.com/HARIHRITHIK/clarity-ai-knowledge-workspace.git
 cd clarity-ai-knowledge-workspace
 
-# 2. Create and activate a virtual environment (recommended)
 python -m venv venv
-
 # Windows
 venv\Scripts\activate
-
 # macOS / Linux
 source venv/bin/activate
 
-# 3. Install dependencies
 pip install -r requirements.txt
-
-# 4. Download the spaCy language model
 python -m spacy download en_core_web_sm
-
-# 5. Launch the application
-streamlit run app.py
 ```
 
-The application opens at `http://localhost:8501`.
-
-### First Run Notes
-- **sentence-transformers** downloads the `all-MiniLM-L6-v2` model (~80MB) on first use. This is a one-time download.
-- If the model download fails, the app automatically falls back to TF-IDF search — fully functional, just keyword-based.
-
----
-
-## Usage
-
-### Try the Demo (30 seconds)
-1. Open the application
-2. Click **Open Demo Workspace** on the home screen
-3. Watch 5 Acme Corporation documents process in real time
-4. Explore the Dashboard — see the Workspace Health metrics
-5. Click any document to read its AI-generated summary and extracted entities
-6. Search "quarterly revenue" or "Sarah Rodriguez" — see semantic results
-7. Go to Reports → select all documents → Generate Report → Download
-
-### Upload Your Own Documents
-1. Navigate to **Upload** in the sidebar
-2. Drag and drop PDF, DOCX, TXT, or CSV files
-3. Click **Process Documents**
-4. Explore your workspace
+### 2. Run the Application
+```bash
+streamlit run app.py
+```
+Open **`http://localhost:8501`** in your browser. Click **`🚀 Open Demo Workspace`** to load the pre-built Acme Corporation dataset in 2 seconds.
 
 ---
 
-## Deployment
+## 🧪 Testing & Benchmarks
 
-### Streamlit Community Cloud (Free, Permanent URL)
+### Run Automated Tests
+```bash
+pytest -v
+```
 
-1. Push the repository to GitHub
-2. Visit [share.streamlit.io](https://share.streamlit.io)
-3. Connect your GitHub account
-4. Select the repository and set `app.py` as the main file
-5. Click **Deploy**
-
-Your application is live in 2–3 minutes at a permanent public URL.
-
-### Notes
-- Add `python -m spacy download en_core_web_sm` to a `packages.txt` or as a startup command
-- The `sentence-transformers` model downloads automatically on first visitor load
+### Run Performance Benchmark
+```bash
+python scripts/benchmark.py
+```
 
 ---
 
-## Future Roadmap
-
-### v1.1 — Persistence
-- [ ] SQLite workspace storage (documents persist across sessions)
-- [ ] User-defined workspace names and descriptions
-- [ ] Document tags and manual categorization
-
-### v1.2 — Collaboration
-- [ ] Multi-user authentication (OAuth / SSO)
-- [ ] Shared team workspaces
-- [ ] Document commenting and annotations
-
-### v1.3 — Advanced Intelligence
-- [ ] PDF table extraction
-- [ ] Document similarity clustering
-- [ ] Timeline extraction (events sorted chronologically)
-- [ ] Scheduled document ingestion (email, Google Drive, SharePoint)
-
-### v2.0 — Enterprise
-- [ ] Role-based access control
-- [ ] Audit logging
-- [ ] API for programmatic document ingestion
-- [ ] Webhook notifications on document processing
-- [ ] SSO / SAML integration
-
-The architecture is designed for this evolution. Adding persistence requires only replacing `core/workspace.py`. Adding authentication requires only wrapping the router in `app.py`. New document formats require only a new `processors/` file.
-
----
-
-## License
+## 📜 License
 
 MIT License — see [LICENSE](LICENSE) for details.
-
----
-
-## About
-
-Clarity was built as a demonstration of what a software engineer can build when they prioritize **product thinking over feature count**.
-
-The goal was not to demonstrate every AI technique. The goal was to build something that looks like Version 1 of a funded SaaS product — something a recruiter could open, understand in 30 seconds, and immediately think: *"This candidate can build real AI software used inside companies."*
-
-**Built with Python, Streamlit, spaCy, sentence-transformers, and scikit-learn.**
-
----
-
-*For questions or feedback, open an issue on GitHub.*

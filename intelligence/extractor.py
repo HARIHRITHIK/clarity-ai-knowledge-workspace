@@ -25,10 +25,12 @@ def _load_spacy():
     if _nlp is not None:
         return _nlp
     try:
+        import os
+        os.environ["SPACY_NUMPY_OPS"] = "1"
         import spacy
         _nlp = spacy.load("en_core_web_sm")
         _spacy_available = True
-    except Exception:
+    except BaseException:
         _nlp = None
         _spacy_available = False
     return _nlp
