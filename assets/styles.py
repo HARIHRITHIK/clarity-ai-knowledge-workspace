@@ -12,12 +12,38 @@ html, body, [class*="css"] {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
-/* Hide Streamlit chrome menus but keep header controls visible */
-#MainMenu, footer { visibility: hidden; }
-.stDeployButton { display: none; }
+/* Hide Streamlit default auto-generated pages navigation */
+[data-testid="stSidebarNav"],
+[data-testid="stSidebarNavSeparator"],
+[data-testid="stSidebarNavItems"],
+div[data-testid="stSidebarNav"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Hide Streamlit header buttons, share, deploy, GitHub icons, edit, and footer */
+#MainMenu, footer {
+    visibility: hidden !important;
+    display: none !important;
+}
+.stDeployButton,
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+[data-testid="stStatusWidget"],
+[data-testid="stMainMenu"],
+[data-testid="manage-app-button"],
+[data-testid="stToolbarActionButton"],
+.viewerBadge_container__r5tak,
+.viewerBadge_link__1SuGQ {
+    display: none !important;
+    visibility: hidden !important;
+}
 .block-container { padding-top: 1.5rem !important; max-width: 1200px; }
 
-/* Keep header transparent */
+/* Keep header transparent without blocking clicks */
 [data-testid="stHeader"] {
     background: transparent !important;
 }
