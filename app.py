@@ -143,30 +143,57 @@ def render_home():
     # Primary CTA
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        if st.button(
-            "🚀  Open Demo Workspace",
-            type="primary",
-            use_container_width=True,
-            key="home_demo_btn",
-        ):
-            Workspace.navigate("upload")
-            st.session_state["trigger_demo"] = True
-            st.rerun()
+        if Workspace.count() > 0:
+            workspace_name = st.session_state.get("workspace_name", "My Workspace")
+            st.markdown(
+                f'<div style="text-align:center;padding:12px;background:#1e293b;border:1px solid #6366f1;border-radius:10px;margin-bottom:12px">'
+                f'<div style="font-size:12px;color:#818cf8;font-weight:600;text-transform:uppercase;letter-spacing:1px">Active Workspace</div>'
+                f'<div style="font-size:16px;font-weight:700;color:#f1f5f9">{workspace_name} · {Workspace.count()} Documents</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+            if st.button(
+                "📊  Explore Active Workspace →",
+                type="primary",
+                use_container_width=True,
+                key="home_dashboard_btn",
+            ):
+                Workspace.navigate("dashboard")
+                st.rerun()
 
-        st.markdown(
-            '<div style="text-align:center;margin-top:10px">'
-            '<span style="font-size:12px;color:#475569">or </span>'
-            '</div>',
-            unsafe_allow_html=True,
-        )
+            st.markdown("<div style='margin-top:8px'></div>", unsafe_allow_html=True)
+            if st.button(
+                "⬆️  Upload More Documents",
+                use_container_width=True,
+                key="home_upload_more_btn",
+            ):
+                Workspace.navigate("upload")
+                st.rerun()
+        else:
+            if st.button(
+                "🚀  Open Demo Workspace",
+                type="primary",
+                use_container_width=True,
+                key="home_demo_btn",
+            ):
+                Workspace.navigate("upload")
+                st.session_state["trigger_demo"] = True
+                st.rerun()
 
-        if st.button(
-            "⬆️  Upload My Documents",
-            use_container_width=True,
-            key="home_upload_btn",
-        ):
-            Workspace.navigate("upload")
-            st.rerun()
+            st.markdown(
+                '<div style="text-align:center;margin-top:10px">'
+                '<span style="font-size:12px;color:#475569">or </span>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+
+            if st.button(
+                "⬆️  Upload My Documents",
+                use_container_width=True,
+                key="home_upload_btn",
+            ):
+                Workspace.navigate("upload")
+                st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
 
