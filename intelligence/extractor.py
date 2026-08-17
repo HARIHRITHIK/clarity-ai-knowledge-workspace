@@ -93,15 +93,12 @@ class EntityExtractor:
         nlp = _load_spacy()
         if nlp is not None:
             spacy_raw = self._extract_spacy(text, nlp)
-            # Use spaCy dates (more accurate)
-            if spacy_raw.get("DATE"):
-                raw["DATE"] = spacy_raw["DATE"]
-            # Add any spaCy ORGs not already found
-            spacy_orgs = {e.text: e for e in spacy_raw.get("ORG", [])}
-            existing_orgs = {e.text: e for e in raw.get("ORG", [])}
-            merged_orgs = {**existing_orgs, **spacy_orgs}
-            if merged_orgs:
-                raw["ORG"] = sorted(merged_orgs.values(), key=lambda e: -e.count)[:15]
+            for label in ("PERSON", "ORG", "DATE", "MONEY", "GPE"):
+                spacy_ents = {e.text: e for e in spacy_raw.get(label, [])}
+                existing_ents = {e.text: e for e in raw.get(label, [])}
+                merged = {**existing_ents, **spacy_ents}
+                if merged:
+                    raw[label] = sorted(merged.values(), key=lambda e: -e.count)[:20]
 
         return raw
 

@@ -209,9 +209,15 @@ def _render_doc_row(doc):
 
     with col_action:
         st.markdown("<div style='margin-top:10px'></div>", unsafe_allow_html=True)
-        if st.button("View →", key=f"view_{doc.id}", type="secondary"):
-            Workspace.navigate("document", doc.id)
-            st.rerun()
+        col_v, col_d = st.columns([3, 1])
+        with col_v:
+            if st.button("View →", key=f"view_{doc.id}", type="secondary", use_container_width=True):
+                Workspace.navigate("document", doc.id)
+                st.rerun()
+        with col_d:
+            if st.button("🗑️", key=f"del_{doc.id}", help="Remove from workspace", use_container_width=True):
+                Workspace.remove(doc.id)
+                st.rerun()
 
 
 def _render_empty_state():

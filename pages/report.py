@@ -29,11 +29,16 @@ def render():
     # ── Document Selection ────────────────────────────────────────────────────
     st.markdown('<div class="section-label">Select Documents</div>', unsafe_allow_html=True)
 
-    col_selectall, _ = st.columns([2, 5])
+    col_selectall, col_deselectall, _ = st.columns([2, 2, 4])
     with col_selectall:
-        if st.button("Select All", use_container_width=True):
+        if st.button("✓ Select All", use_container_width=True):
             for doc in processed:
                 st.session_state[f"report_select_{doc.id}"] = True
+            st.rerun()
+    with col_deselectall:
+        if st.button("✕ Deselect All", use_container_width=True):
+            for doc in processed:
+                st.session_state[f"report_select_{doc.id}"] = False
             st.rerun()
 
     selected_ids: list[str] = []
@@ -118,44 +123,47 @@ def render():
 def _render_preview(selected_docs, workspace_name: str):
     """Show a simplified in-app preview of the report content."""
     from datetime import datetime
+    import html
 
     now = datetime.now().strftime("%B %d, %Y")
 
-    st.markdown(
-        f'<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:32px;color:#1e293b;font-family:\'Segoe UI\',sans-serif">'
-        f'<div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);color:white;padding:28px 32px;border-radius:8px;margin-bottom:24px">'
-        f'<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#6366f1;font-weight:600;margin-bottom:6px">Clarity Workspace · Intelligence Report</div>'
-        f'<div style="font-size:24px;font-weight:700;margin-bottom:4px">{workspace_name}</div>'
-        f'<div style="font-size:13px;color:#94a3b8">Generated on {now} · {len(selected_docs)} documents</div>'
-        f'</div>',
-        unsafe_allow_html=True,
-    )
-
+    doc_blocks = []
     for doc in selected_docs:
         icon = config.CATEGORY_ICONS.get(doc.category, "📄")
         cat_color = config.CATEGORY_COLORS.get(doc.category, "#64748b")
 
         facts_html = ""
         for fact in doc.key_facts[:3]:
-            facts_html += f'<div style="padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px;color:#475569">› {fact}</div>'
+            facts_html += f'<div style="padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:13px;color:#475569">› {html.escape(fact)}</div>'
 
-        summary_preview = doc.summary[:300] + ("…" if len(doc.summary) > 300 else "")
-        st.markdown(
+        summary_preview = html.escape(doc.summary[:300] + ("…" if len(doc.summary) > 300 else ""))
+        doc_blocks.append(
             f'<div style="background:white;border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin-bottom:16px">'
             f'<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'
             f'<span style="font-size:24px">{icon}</span>'
             f'<div>'
-            f'<div style="font-size:16px;font-weight:600">{doc.display_name}</div>'
-            f'<span style="background:{cat_color}22;color:{cat_color};border:1px solid {cat_color}55;border-radius:12px;padding:2px 10px;font-size:11px;font-weight:600">{doc.category}</span>'
+            f'<div style="font-size:16px;font-weight:600;color:#0f172a">{html.escape(doc.display_name)}</div>'
+            f'<span style="background:{cat_color}22;color:{cat_color};border:1px solid {cat_color}55;border-radius:12px;padding:2px 10px;font-size:11px;font-weight:600">{html.escape(doc.category)}</span>'
             f'</div>'
             f'</div>'
             f'<p style="font-size:14px;color:#475569;line-height:1.6;margin-bottom:12px">{summary_preview}</p>'
             f'{facts_html}'
-            f'</div>',
-            unsafe_allow_html=True,
+            f'</div>'
         )
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    all_docs_html = "".join(doc_blocks)
+    full_preview_html = (
+        f'<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:32px;color:#1e293b;font-family:\'Segoe UI\',sans-serif">'
+        f'<div style="background:linear-gradient(135deg,#0f172a,#1e3a5f);color:white;padding:28px 32px;border-radius:8px;margin-bottom:24px">'
+        f'<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#6366f1;font-weight:600;margin-bottom:6px">Clarity Workspace · Intelligence Report</div>'
+        f'<div style="font-size:24px;font-weight:700;margin-bottom:4px">{html.escape(workspace_name)}</div>'
+        f'<div style="font-size:13px;color:#94a3b8">Generated on {now} · {len(selected_docs)} documents</div>'
+        f'</div>'
+        f'{all_docs_html}'
+        f'</div>'
+    )
+
+    st.markdown(full_preview_html, unsafe_allow_html=True)
 
 
 def _render_empty_state():

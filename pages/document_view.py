@@ -104,7 +104,7 @@ def _render_summary_tab(doc):
         entity_count = sum(len(v) for v in doc.entities.values())
         st.metric("Entities Found", entity_count)
     with c4:
-        indexed = "✓ Yes" if doc.embedding else "✗ No"
+        indexed = "✓ Indexed" if doc.is_processed else "⏳ Pending"
         st.metric("Search Indexed", indexed)
 
 
