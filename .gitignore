@@ -34,5 +34,11 @@ env/
 .DS_Store
 Thumbs.db
 
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
 # Streamlit secrets
 .streamlit/secrets.toml
+

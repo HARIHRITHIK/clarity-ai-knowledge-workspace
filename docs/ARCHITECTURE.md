@@ -1,91 +1,91 @@
 # System Architecture & Technical Design
 
-This document details the software architecture, data flow, component design, and engineering trade-offs behind **Clarity**.
+This document describes the software architecture, modular component structure, and engineering trade-offs of **Clarity — AI Knowledge Workspace**.
 
 ---
 
-## 1. High-Level Data Flow
+## 1. High-Level System Architecture
 
 ```
-                 ┌────────────────────────────────┐
-                 │  Multi-Format Document Input   │
-                 │   PDF / DOCX / TXT / CSV       │
-                 └───────────────┬────────────────┘
-                                 │
-                                 ▼
-                 ┌────────────────────────────────┐
-                 │ Stage 1: Text Extraction       │
-                 │ (Abstract Factory Processors)  │
-                 └───────────────┬────────────────┘
-                                 │
-                                 ▼
-                 ┌────────────────────────────────┐
-                 │ Stage 2: Category Classifier   │
-                 │ (TF-IDF Keyword Frequency)     │
-                 └───────────────┬────────────────┘
-                                 │
-                 ┌───────────────┴───────────────┐
-                 ▼                               ▼
-  ┌─────────────────────────────┐ ┌─────────────────────────────┐
-  │ Stage 3: Extractive Summary │ │ Stage 4: Entity Recognition │
-  │ (LSA Sentence Importance)   │ │ (spaCy NER + Regex)         │
-  └──────────────┬──────────────┘ └──────────────┬──────────────┘
-                 │                               │
-                 └───────────────┬───────────────┘
-                                 │
-                                 ▼
-                 ┌────────────────────────────────┐
-                 │ Stage 5: Semantic Indexing     │
-                 │ (Vector Embedding + TF-IDF)    │
-                 └───────────────┬────────────────┘
-                                 │
-                                 ▼
-                 ┌────────────────────────────────┐
-                 │ Core Workspace Repository      │
-                 │ (Progressively Hydrated Model) │
-                 └───────────────┬────────────────┘
-                                 │
-                 ┌───────────────┴───────────────┐
-                 ▼                               ▼
-  ┌─────────────────────────────┐ ┌─────────────────────────────┐
-  │ Interactive Dashboard &     │ │ Standalone HTML Report      │
-  │ Confidence-Ranked Search    │ │ Generator (Print-Ready)     │
-  └─────────────────────────────┘ └─────────────────────────────┘
+                      ┌───────────────────────────────┐
+                      │   Multi-Format Document Input │
+                      │      PDF / DOCX / TXT / CSV   │
+                      └───────────────┬───────────────┘
+                                      │
+                                      ▼
+                      ┌───────────────────────────────┐
+                      │ Stage 1: Text Extraction      │
+                      │ (Abstract Factory Processors) │
+                      └───────────────┬───────────────┘
+                                      │
+                                      ▼
+                      ┌───────────────────────────────┐
+                      │ Stage 2: Domain Classifier    │
+                      │ (TF-IDF Keyword Frequency)    │
+                      └───────────────┬───────────────┘
+                                      │
+                      ┌───────────────┴───────────────┐
+                      ▼                               ▼
+       ┌─────────────────────────────┐ ┌─────────────────────────────┐
+       │ Stage 3: Extractive Summary │ │ Stage 4: Entity Recognition │
+       │ (LSA Sentence Importance)   │ │ (spaCy NER + Regex Fallback)│
+       └──────────────┬──────────────┘ └──────────────┬──────────────┘
+                      │                               │
+                      └───────────────┬───────────────┘
+                                      │
+                                      ▼
+                      ┌───────────────────────────────┐
+                      │ Stage 5: Semantic Indexing    │
+                      │ (Vector Embedding + TF-IDF)   │
+                      └───────────────┬───────────────┘
+                                      │
+                                      ▼
+                      ┌───────────────────────────────┐
+                      │ Core Workspace Repository     │
+                      │ (Progressively Hydrated Model)│
+                      └───────────────┬───────────────┘
+                                      │
+                      ┌───────────────┴───────────────┐
+                      ▼                               ▼
+       ┌─────────────────────────────┐ ┌─────────────────────────────┐
+       │ Interactive Dashboard &     │ │ Standalone HTML Report      │
+       │ Semantic Search Engine      │ │ Generator (XSS-Sanitized)   │
+       └─────────────────────────────┘ └─────────────────────────────┘
 ```
 
 ---
 
-## 2. Component Breakdown
+## 2. Component Structure
 
-### Core (`core/`)
-* **`document.py`**: Defines the `Document` and `Entity` dataclasses. Implements progressive hydration—fields are populated sequentially across pipeline stages.
-* **`workspace.py`**: In-memory repository layer managing documents, query aggregations, and workspace health statistics. Decoupled from Streamlit session state so it can be swapped to SQLite/PostgreSQL in future iterations.
-* **`pipeline.py`**: Orchestrator executing the 5-stage processing pipeline with stage isolation, progress callbacks, and graceful error boundaries.
+### Core Layer (`core/`)
+* **`document.py`**: Defines the `Document` and `Entity` data models. Uses progressive hydration—each processing stage populates specific dataclass attributes (`summary`, `key_facts`, `entities`, `category`, `embedding`).
+* **`workspace.py`**: In-memory repository layer managing document collections, search indexing, category filtering, and aggregated workspace health statistics.
+* **`pipeline.py`**: Orchestrator executing the 5 processing stages sequentially with isolated try-except error boundaries and progress callback hooks.
 
-### Processors (`processors/`)
-* Implements the **Abstract Factory** pattern via `BaseProcessor` and `get_processor(extension)`.
-* **`pdf_processor.py`**: Uses `pypdf` to extract text from multi-page PDFs.
-* **`docx_processor.py`**: Uses `python-docx` to extract text across paragraphs and tables.
-* **`text_processor.py`**: Handles `.txt` with encoding fallbacks (UTF-8, Latin-1, CP1252) and `.csv` tabular data formatting via `pandas`.
+### Ingestion & Processor Layer (`processors/`)
+* Implements the **Abstract Factory** pattern via `BaseProcessor` and `get_processor(extension)`:
+  * **`pdf_processor.py`**: Extracts text from PDF pages using `pypdf`.
+  * **`docx_processor.py`**: Extracts text from paragraphs and table cells using `python-docx`.
+  * **`text_processor.py`**: Handles `.txt` files with multi-encoding fallback (`utf-8`, `latin-1`, `cp1252`) and `.csv` tabular files via `pandas`.
 
-### Intelligence Layer (`intelligence/`)
-* **`classifier.py`**: Deterministic keyword-weighted TF-IDF classifier that maps document text to business categories.
-* **`summarizer.py`**: Extractive text summarization using TF-IDF sentence matrix scoring. Ranks and returns top-N sentences in original reading order to avoid hallucinations.
-* **`extractor.py`**: Named entity recognition targeting `PERSON`, `ORG`, `DATE`, `MONEY`, and `GPE`. Combines neural spaCy models with high-precision regex fallback patterns.
-* **`search.py`**: Vector semantic search with cosine similarity thresholding (`High > 0.65`, `Medium > 0.40`, `Low`), equipped with automated TF-IDF fallback for CPU environments.
+### Intelligence & NLP Layer (`intelligence/`)
+* **`classifier.py`**: Deterministic domain classifier computing TF-IDF keyword frequency scores against business categories (*Financial Report*, *HR Policy*, *Meeting Notes*, *Contract / Legal*, *Customer Feedback*, *Project Brief*).
+* **`summarizer.py`**: Extractive text summarizer using TF-IDF term matrix sentence scoring. Ranks and selects the top $N$ factual sentences in original order to minimize generative hallucination.
+* **`extractor.py`**: Named entity recognition for `PERSON`, `ORG`, `DATE`, `MONEY`, and `GPE`. Integrates spaCy's `en_core_web_sm` model with regex pattern fallbacks for currency, dates, and emails.
+* **`search.py`**: Semantic search engine computing cosine similarity over dense `sentence-transformers` embeddings (`all-MiniLM-L6-v2`), with automated fallback to TF-IDF sparse vector cosine similarity for CPU environments.
+
+### UI & Reporting Layer (`pages/` & `utils/`)
+* **`pages/`**: Modular Streamlit views (`dashboard.py`, `upload.py`, `document_view.py`, `search_page.py`, `report.py`).
+* **`utils/exporter.py`**: Standalone HTML report generator with embedded CSS styling, responsive tables, and strict HTML entity escaping (`html.escape`) to prevent cross-site scripting (XSS).
 
 ---
 
-## 3. Engineering Decisions & Trade-Offs
+## 3. Engineering Decisions & Design Trade-Offs
 
-### 1. Offline-First vs. Cloud LLM APIs
-* **Decision**: All NLP components run locally on CPU without external API calls.
-* **Trade-off**: Slightly lower conversational flexibility compared to GPT-4, but provides **zero operational cost**, **sub-second latency**, **100% data privacy**, and **guaranteed availability without cloud rate-limits**.
-
-### 2. Extractive vs. Generative Summarization
-* **Decision**: Sentences are scored and selected directly from source text using TF-IDF term weights.
-* **Trade-off**: Extractive summaries preserve exact factual claims (financial numbers, legal dates, employee names) with **zero hallucination risk**, which is mandatory for enterprise compliance.
-
-### 3. Abstract Factory vs. Ad-hoc Parsers
-* **Decision**: All document parsers inherit from `BaseProcessor` and are instantiated via `get_processor()`.
-* **Trade-off**: Cleaner code organization and easy extensibility—adding new file formats (e.g. Markdown or RTF) requires only adding a new processor class without touching orchestrator logic.
+| Decision | Implementation | Trade-Off & Rationale |
+|---|---|---|
+| **Offline-First Execution** | Local CPU inference via spaCy, scikit-learn, and sentence-transformers | Eliminates third-party API costs, network latency, and vendor rate limits while preserving data privacy. |
+| **Extractive Summarization** | TF-IDF sentence scoring | Selects verified sentences directly from source text, minimizing the hallucination risks inherent in generative language models. |
+| **Abstract Factory Processors** | `BaseProcessor` inheritance | Decouples format-specific text extraction from pipeline orchestration, allowing new file types to be added cleanly. |
+| **Multi-Tier Fallback** | Dense vector search ➔ TF-IDF cosine similarity; spaCy NER ➔ Regex patterns | Guarantees system resilience on low-resource environments without unhandled crashes. |
+| **Stateless Workspace Interface** | `Workspace` repository pattern | Decouples business logic from Streamlit's session state, simplifying migration to a database backend (e.g. SQLite / PostgreSQL) in future releases. |

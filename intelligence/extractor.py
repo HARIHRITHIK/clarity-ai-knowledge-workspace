@@ -25,8 +25,11 @@ def _load_spacy():
     if _nlp is not None:
         return _nlp
     try:
-        import os
+        import os, sys
         os.environ["SPACY_NUMPY_OPS"] = "1"
+        os.environ["THINC_PREFER_GPU"] = "0"
+        if "torch" not in sys.modules:
+            sys.modules["torch"] = None
         import spacy
         _nlp = spacy.load("en_core_web_sm")
         _spacy_available = True

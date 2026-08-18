@@ -1,208 +1,268 @@
-# 🔮 Clarity — AI-Powered Knowledge Workspace
+# Clarity — AI Knowledge Workspace
 
-> **Turn document chaos into organized intelligence.**
+> **Transform unstructured business documents into an organized, searchable intelligence workspace.**
 
 [![CI](https://github.com/HARIHRITHIK/clarity-ai-knowledge-workspace/actions/workflows/ci.yml/badge.svg)](https://github.com/HARIHRITHIK/clarity-ai-knowledge-workspace/actions)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.39+-FF4B4B?style=flat&logo=streamlit&logoColor=white)](https://streamlit.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 
-[**⚡ 2-Minute Demo Guide**](DEMO.md) • [**🏛️ System Architecture**](docs/ARCHITECTURE.md) • [**📁 Sample Corpus**](sample_data/)
+[**⚡ 2-Minute Recruiter Demo**](DEMO.md) • [**🏛️ System Architecture**](docs/ARCHITECTURE.md) • [**📁 Sample Corpus**](sample_data/)
 
 ---
 
-## 📌 The Problem
+## 🚀 Live Demo
 
-Business teams accumulate thousands of unstructured PDFs, contracts, meeting notes, reports, and spreadsheets. Retrieving critical context requires:
-- Manually reading through lengthy documents
-- Brittle keyword search that misses semantic context
-- Maintaining internal wikis that go stale
-- Relying on tribal knowledge
-
-**Clarity** is a production-grade document intelligence workspace that automatically ingests business files and transforms them into an organized, searchable knowledge base—with zero external API dependencies or cloud costs.
-
-```
-Upload Files ➔ AI Analyzes ➔ Knowledge Organized ➔ Semantic Search ➔ Executive Reports
-```
+> **Live Demo:** [ADD LIVE DEMO URL HERE]
 
 ---
 
-## 🏛️ System Architecture
+## 📸 Preview
+
+| Workspace Dashboard | Document Intelligence |
+|:---:|:---:|
+| ![Clarity Workspace](assets/screenshots/workspace.png) | ![Document Analysis](assets/screenshots/document-analysis.png) |
+
+| Semantic Search | Executive Report |
+|:---:|:---:|
+| ![Semantic Search](assets/screenshots/semantic-search.png) | ![Executive Report](assets/screenshots/executive-report.png) |
+
+### Adding Screenshots
+1. Open the [`assets/screenshots/`](assets/screenshots/) directory.
+2. Upload high-resolution application screenshots using the exact filenames:
+   * `workspace.png`
+   * `document-analysis.png`
+   * `semantic-search.png`
+   * `executive-report.png`
+3. Commit to `main` and the preview grid above will render them automatically.
+
+---
+
+## Problem
+
+Organizations accumulate thousands of unstructured PDF reports, contracts, meeting notes, and spreadsheets. Retrieving actionable context typically involves:
+* Manually reading through lengthy multi-page files.
+* Keyword search tools that miss semantic synonyms and intent.
+* Maintaining internal wikis that quickly become outdated.
+* Relying on tribal knowledge across disconnected teams.
+
+---
+
+## Solution
+
+**Clarity** is an offline-first document intelligence system. When documents are ingested, Clarity automatically parses text across multiple file formats, classifies domain categories, generates extractive summaries, extracts structured named entities, builds a semantic search index, and exports executive HTML reports—all running locally on CPU with zero external API dependencies.
 
 ```
-                 ┌─────────────────┐
-                 │  PDF / DOCX /   │
-                 │ TXT / CSV       │
-                 └────────┬────────┘
-                          │
-                          ▼
-                 ┌─────────────────┐
-                 │ Text Extraction │
-                 │ (Abstract Fact.)│
-                 └────────┬────────┘
-                          │
-                          ▼
-                 ┌─────────────────┐
-                 │ Classification  │
-                 │ (TF-IDF Scorer) │
-                 └────────┬────────┘
-                          │
-              ┌───────────┴───────────┐
-              ▼           ▼           ▼
-          Summarize      NER      Vector Search
-          (LSA-TFIDF)  (spaCy)    (all-MiniLM)
-              │           │           │
-              └───────────┼───────────┘
-                          │
-                          ▼
-                 ┌─────────────────┐
-                 │ Core Knowledge  │
-                 │ Repository Layer│
-                 └────────┬────────┘
-                          │
-                 ┌────────┴────────┐
-                 ▼                 ▼
-          ┌─────────────┐   ┌─────────────┐
-          │ Interactive │   │ Standalone  │
-          │ Dashboard   │   │ HTML Report │
-          └─────────────┘   └─────────────┘
+Documents ➔ Text Extraction ➔ Classification ➔ Summarization ➔ NER ➔ Semantic Search ➔ Workspace ➔ Executive Report
 ```
 
 ---
 
-## 💡 Engineering Decisions & Trade-Offs
+## Key Features
 
-* **Offline-First & Zero API Dependency**:
-  Running 100% on local CPU models (spaCy, scikit-learn, sentence-transformers) ensures zero API costs, zero network latency, 100% data privacy, and immunity to third-party rate limits.
-* **Extractive Summarization over Generative LLMs**:
-  Scores and selects the top factual sentences directly from source text using TF-IDF term matrices. This guarantees **zero generative hallucination** for financial figures, legal clauses, and dates.
-* **Abstract Factory File Processors**:
-  Text extraction (`PDFProcessor`, `DOCXProcessor`, `TextProcessor`) is fully decoupled from pipeline orchestration, allowing new formats to be added without modifying core business logic.
-* **Graceful Degradation**:
-  Semantic search leverages `sentence-transformers` vector embeddings with automated fallback to TF-IDF cosine similarity if weights are unavailable. Every component is designed to never crash.
+* **📊 Workspace Health Dashboard**: Real-time aggregated intelligence panel showing total documents, auto-detected categories, unique entities, and interactive Plotly distribution charts.
+* **🤖 Automated 5-Stage NLP Pipeline**: Sequentially transforms raw files into structured knowledge with per-stage progress feedback.
+* **🔍 Semantic Search Engine**: Natural language query search with cosine similarity relevance scoring and **High / Medium / Low** confidence indicators.
+* **📑 Entity Extraction & Fact Mining**: Identifies people, organizations, dates, currency amounts, and locations with frequency counts.
+* **📄 Executive Report Builder**: Select any combination of documents to compile and export a standalone, print-ready, XSS-sanitized HTML executive report.
+* **🚀 Instant Demo Workspace**: Pre-bundled enterprise dataset allowing instant evaluation in under 30 seconds.
 
 ---
 
-## ✨ Features
+## Supported Formats
 
-### 📊 Workspace Health Dashboard
-Aggregates enterprise-level intelligence across the document library:
-* **Documents & Word Counts**: Total library inventory.
-* **Auto-Detected Categories**: Financial Reports, Meeting Notes, Contracts, HR Policies, Customer Feedback, Project Briefs.
-* **Named Entities**: Unique people, organizations, dates, and amounts.
-* **Interactive Visualizations**: Category distribution donut chart and document size bar chart (Plotly).
-
-### 🤖 5-Stage Document Pipeline
-Every uploaded file undergoes an isolated 5-stage transformation:
-1. **Parse**: Text extraction with encoding fallbacks (PDF, DOCX, TXT, CSV).
-2. **Classify**: Deterministic keyword scoring against curated business domain models.
-3. **Summarize**: 4-sentence extractive executive summary + top 6 key facts.
-4. **Extract Entities**: spaCy neural NER with regex pattern supplement (`PERSON`, `ORG`, `DATE`, `MONEY`, `GPE`).
-5. **Index**: Dense vector embeddings with confidence rating (`High`, `Medium`, `Low`).
-
-### 📄 Executive HTML Report Generator
-Generates standalone, print-ready HTML executive reports with complete metadata, summaries, key facts, and entity chips—sanitized against XSS injection and printable as PDF.
+| Format | Extension | Processing Engine | Capabilities |
+|---|:---:|---|---|
+| **PDF** | `.pdf` | `pypdf` | Multi-page text extraction |
+| **Word Document** | `.docx` | `python-docx` | Headings, paragraphs, table cells |
+| **Plain Text** | `.txt` | Python Standard Library | Multi-encoding support (`utf-8`, `latin-1`, `cp1252`) |
+| **Tabular Data** | `.csv` | `pandas` | Column-structured record serialization |
 
 ---
 
-## 📂 Project Structure
+## 5-Stage NLP Pipeline
+
+Every document passes through an isolated 5-stage transformation pipeline:
+
+1. **Stage 1: Text Extraction** — Dispatches file bytes to the appropriate format processor using an Abstract Factory pattern.
+2. **Stage 2: Domain Classification** — Computes TF-IDF keyword frequency vectors to categorize the document (e.g. *Financial Report*, *HR Policy*, *Contract / Legal*).
+3. **Stage 3: Extractive Summarization** — Ranks sentences via TF-IDF importance scoring to generate a factual 4-sentence summary and key statements.
+4. **Stage 4: Named Entity Recognition** — Extracts structured entities (`PERSON`, `ORG`, `DATE`, `MONEY`, `GPE`) using spaCy with regex fallback patterns.
+5. **Stage 5: Semantic Indexing** — Computes dense vector embeddings using `sentence-transformers` (`all-MiniLM-L6-v2`) for vector space search.
+
+---
+
+## Architecture
 
 ```
-clarity/
-├── app.py                    ← Streamlit application entry point & router
-├── config.py                 ← Centralized tunable constants
-│
-├── core/
-│   ├── document.py           ← Document data model (progressive hydration)
-│   ├── workspace.py          ← In-memory repository layer (DB-swappable)
-│   └── pipeline.py           ← 5-stage processing orchestrator
-│
-├── processors/               ← File handlers (Abstract Factory pattern)
-│   ├── base.py               ← BaseProcessor & factory registry
-│   ├── pdf_processor.py      ← pypdf integration
-│   ├── docx_processor.py     ← python-docx integration
-│   └── text_processor.py     ← TXT & CSV tabular parser
-│
-├── intelligence/             ← AI & NLP components
-│   ├── classifier.py         ← TF-IDF keyword classification
-│   ├── summarizer.py         ← LSA extractive sentence ranking
-│   ├── extractor.py          ← spaCy NER + regex fallback
-│   └── search.py             ← Vector search + TF-IDF fallback
-│
-├── pages/                    ← Modular UI screens
-│   ├── dashboard.py          ← Workspace Health & library management
-│   ├── upload.py             ← Multi-format uploader & demo loader
-│   ├── document_view.py      ← Document detail, summary, entities & export
-│   ├── search_page.py        ← Semantic search & confidence filters
-│   └── report.py             ← HTML report builder & live preview
-│
-├── sample_data/              ← Multi-format sample files for testing & demos
-│   ├── company_report.pdf
-│   ├── employee_policy.docx
-│   ├── project_notes.txt
-│   └── sales_summary.csv
-│
-├── tests/                    ← Automated pytest suite
-│   ├── test_processors.py
-│   ├── test_intelligence.py
-│   ├── test_pipeline.py
-│   └── test_exporter.py
-│
-├── scripts/
-│   ├── benchmark.py          ← Reproducible throughput & latency benchmark
-│   └── generate_sample_data.py
-│
-├── docs/
-│   └── ARCHITECTURE.md       ← In-depth architectural documentation
-│
-└── DEMO.md                   ← Recruiter 2-minute walkthrough guide
+                 ┌────────────────────────────────┐
+                 │  Multi-Format Document Input   │
+                 │   PDF / DOCX / TXT / CSV       │
+                 └───────────────┬────────────────┘
+                                 │
+                                 ▼
+                 ┌────────────────────────────────┐
+                 │ Stage 1: Text Extraction       │
+                 │ (Abstract Factory Processors)  │
+                 └───────────────┬────────────────┘
+                                 │
+                                 ▼
+                 ┌────────────────────────────────┐
+                 │ Stage 2: Domain Classifier     │
+                 │ (TF-IDF Keyword Frequency)     │
+                 └───────────────┬────────────────┘
+                                 │
+                 ┌───────────────┴───────────────┐
+                 ▼                               ▼
+  ┌─────────────────────────────┐ ┌─────────────────────────────┐
+  │ Stage 3: Extractive Summary │ │ Stage 4: Entity Recognition │
+  │ (LSA Sentence Importance)   │ │ (spaCy NER + Regex)         │
+  └──────────────┬──────────────┘ └──────────────┬──────────────┘
+                 │                               │
+                 └───────────────┬───────────────┘
+                                 │
+                                 ▼
+                 ┌────────────────────────────────┐
+                 │ Stage 5: Semantic Indexing     │
+                 │ (Vector Embedding + TF-IDF)    │
+                 └───────────────┬────────────────┘
+                                 │
+                                 ▼
+                 ┌────────────────────────────────┐
+                 │ Core Workspace Repository      │
+                 │ (Progressively Hydrated Model) │
+                 └───────────────┬────────────────┘
+                                 │
+                 ┌───────────────┴───────────────┐
+                 ▼                               ▼
+  ┌─────────────────────────────┐ ┌─────────────────────────────┐
+  │ Interactive Dashboard &     │ │ Standalone HTML Report      │
+  │ Semantic Search Interface   │ │ Generator (Print-Ready)     │
+  └─────────────────────────────┘ └─────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Quickstart
+## NLP Techniques
 
-### Prerequisites
-- Python 3.10 or 3.11
-- pip
-
-### 1. Clone & Setup
-```bash
-git clone https://github.com/HARIHRITHIK/clarity-ai-knowledge-workspace.git
-cd clarity-ai-knowledge-workspace
-
-python -m venv venv
-# Windows
-venv\Scripts\activate
-# macOS / Linux
-source venv/bin/activate
-
-pip install -r requirements.txt
-python -m spacy download en_core_web_sm
-```
-
-### 2. Run the Application
-```bash
-streamlit run app.py
-```
-Open **`http://localhost:8501`** in your browser. Click **`🚀 Open Demo Workspace`** to load the pre-built Acme Corporation dataset in 2 seconds.
+* **Extractive Summarization (LSA-Inspired)**: Scores sentences based on normalized TF-IDF word significance within the document. Selecting sentences directly from the source text guarantees factual determinism and avoids generative hallucinations.
+* **Named Entity Recognition (NER)**: Leverages spaCy's `en_core_web_sm` statistical pipeline to extract domain entities, supplemented by deterministic regex patterns for monetary values and dates.
+* **Vector Space Embeddings**: Computes 384-dimensional dense semantic vectors using `sentence-transformers/all-MiniLM-L6-v2` for cross-document query matching.
 
 ---
 
-## 🧪 Testing & Benchmarks
+## Semantic Search
 
-### Run Automated Tests
+The search engine compares the vector embedding of a natural language query against the stored document embeddings using **Cosine Similarity**:
+
+$$\text{Cosine Similarity} = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \|\mathbf{v}\|}$$
+
+* **Confidence Thresholds**:
+  * **High Confidence**: Similarity Score $\ge 0.65$
+  * **Medium Confidence**: Similarity Score $\ge 0.40$
+  * **Low Confidence**: Similarity Score $< 0.40$
+
+---
+
+## Fallback Strategy
+
+To ensure zero-crash reliability on low-resource CPU environments:
+* **Dense Embedding Fallback**: If `sentence-transformers` model weights are unavailable or fail to load, search automatically falls back to **TF-IDF sparse vector cosine similarity**.
+* **NER Fallback**: If spaCy's model is not initialized, entity extraction defaults to high-precision regular expression extractors for currency, dates, and capitalized entity patterns.
+* **Encoding Fallback**: Text file parsers attempt `utf-8`, followed by `latin-1` and `cp1252` before raising an error.
+
+---
+
+## Technology Stack
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| **Language** | Python 3.10 / 3.11 | Core application logic |
+| **UI Framework** | Streamlit 1.39+ | Interactive web interface |
+| **Vector Embeddings** | `sentence-transformers` (`all-MiniLM-L6-v2`) | Semantic search vectorization |
+| **Entity Extraction** | `spaCy` (`en_core_web_sm`) | Statistical named entity recognition |
+| **Text Analytics** | `scikit-learn` | TF-IDF vectorization and sentence scoring |
+| **Document Parsers** | `pypdf`, `python-docx`, `pandas` | Multi-format file ingestion |
+| **Visualizations** | `plotly` | Interactive dashboard charts |
+| **Testing & CI** | `pytest`, `pytest-cov`, GitHub Actions | Automated test suite and CI workflow |
+
+---
+
+## Testing
+
+The project includes an automated test suite covering all critical business paths:
+* File processors (PDF, DOCX, TXT, CSV text extraction and error boundaries)
+* Classification, summarization, entity extraction, and semantic search
+* 5-stage pipeline orchestration and error propagation
+* HTML report generation and XSS escaping
+
+Run the test suite locally:
 ```bash
 pytest -v
 ```
 
-### Run Performance Benchmark
+---
+
+## Benchmarking
+
+A reproducible performance benchmark script is included in `scripts/benchmark.py` to evaluate pipeline throughput and search latency:
+
 ```bash
 python scripts/benchmark.py
 ```
 
 ---
 
-## 📜 License
+## Deployment
 
-MIT License — see [LICENSE](LICENSE) for details.
+### Local Setup
+```bash
+# 1. Clone repository
+git clone https://github.com/HARIHRITHIK/clarity-ai-knowledge-workspace.git
+cd clarity-ai-knowledge-workspace
+
+# 2. Set up virtual environment
+python -m venv venv
+# Windows: venv\Scripts\activate | Unix: source venv/bin/activate
+
+# 3. Install dependencies & spaCy language model
+pip install -r requirements.txt
+python -m spacy download en_core_web_sm
+
+# 4. Launch application
+streamlit run app.py
+```
+
+---
+
+## Limitations
+
+* **In-Memory Storage**: Workspace data is managed in-memory per user session; refreshing the browser resets the active workspace.
+* **Single-Node Execution**: Ingestion runs synchronously on CPU without distributed task queues (e.g. Celery).
+* **Scanned PDF Text**: Relies on direct text extraction; scanned image-only PDFs without an OCR layer are not parsed.
+
+---
+
+## Future Improvements
+
+* **v1.1**: Persistent SQLite / PostgreSQL database integration for multi-session workspace storage.
+* **v1.2**: Asynchronous background document ingestion queue with worker processes.
+* **v1.3**: Tesseract OCR support for scanned PDF and image ingestion.
+* **v1.4**: Document comparison and diff visualization between contract versions.
+
+---
+
+## Technical Interview Concepts
+
+When discussing this project in technical interviews, be prepared to explain:
+
+1. **Extractive vs. Generative NLP**: Why sentence ranking via TF-IDF was chosen over generative LLMs to guarantee factual consistency on financial and legal documents.
+2. **Dense vs. Sparse Search**: The trade-offs between sparse TF-IDF keyword matrices (exact keyword matching) and dense SentenceTransformer embeddings (semantic synonym matching).
+3. **Abstract Factory Architecture**: How `BaseProcessor` decouples file ingestion from pipeline execution.
+4. **Resilience & Graceful Degradation**: How multi-tier model fallbacks prevent unhandled exceptions on CPU-only infrastructure.
+
+---
+
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.

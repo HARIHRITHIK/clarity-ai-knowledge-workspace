@@ -1,62 +1,58 @@
-# 🎯 Clarity — Recruiter & Interview Demo Guide
-
-This guide provides a **reproducible 2-minute walkthrough** of the core capabilities of **Clarity**.
+> **Live Demo:** [ADD LIVE DEMO URL HERE]
 
 ---
 
-## ⚡ Quick Demo (2-Minute Walkthrough)
+# 2-Minute Recruiter Demo
 
-### 1. Launch Clarity
-Run the application locally or open the live deployment:
+This guide provides a deterministic, **2-minute evaluation walkthrough** of **Clarity — AI Knowledge Workspace**.
+
+---
+
+### Step 1: Open Live Demo
+Open the live deployment link above or run the app locally:
 ```bash
 streamlit run app.py
 ```
 
-### 2. Load the Demo Corpus
-* On the **Home** screen, click **`🚀 Open Demo Workspace`**.
-* Watch the 5-stage automated pipeline process 5 realistic Acme Corporation documents in real-time with per-stage progress indicators (`Parse` ➔ `Classify` ➔ `Summarize` ➔ `Extract Entities` ➔ `Build Index`).
+### Step 2: Load Sample Document Corpus
+* On the **Home** landing page, click **`🚀 Open Demo Workspace`** (or go to **Upload** and upload files from `sample_data/`).
+* The system automatically queues the pre-bundled multi-format enterprise dataset (`company_report.pdf`, `employee_policy.docx`, `project_notes.txt`, `sales_summary.csv`).
 
-### 3. Explore Workspace Health Metrics
+### Step 3: Process the Corpus
+* Watch the **5-stage NLP pipeline** execute with live progress updates:
+  ```
+  Text Parsing ➔ Domain Classification ➔ Extractive Summarization ➔ Named Entity Recognition ➔ Semantic Indexing
+  ```
+
+### Step 4: Review Classification
 * Navigate to the **Dashboard**.
-* Review the aggregated enterprise health metrics:
-  - **Documents** (5)
-  - **Categories** (5 auto-detected types)
-  - **People Mentioned** (Extracted named individuals)
-  - **Key Facts** (Extracted business statements)
-  - **Search Coverage** (100%)
-* Inspect the interactive **Category Distribution** donut chart and **Document Size** bar chart.
+* Review the **Workspace Health** metrics:
+  * Total Documents & Word Counts
+  * Auto-Detected Domain Categories (e.g. *Financial Report*, *HR Policy*, *Meeting Notes*, *Contract / Legal*)
+  * Interactive Plotly distribution donut and horizontal bar charts
 
-### 4. Inspect Extracted Document Intelligence
-* In the **Document Library**, click **`View →`** on `Acme Q4 2024 Financial Report`.
-* **Summary Tab**: Review the 4-sentence extractive executive summary and numbered key facts.
-* **Entities Tab**: Review color-coded chips for **People**, **Organizations**, **Dates**, and **Amounts** along with the frequency table.
-* **Export Tab**: Download the document's structured data as `JSON` or `CSV`.
+### Step 5: Review Extractive Summary
+* In the **Document Library**, click **`View →`** on any document (e.g., `Acme Q4 Financial Report`).
+* Under the **Summary** tab, review the 4-sentence extractive executive summary and numbered key facts generated via TF-IDF sentence matrix scoring.
 
-### 5. Perform Semantic Search
+### Step 6: Inspect Entities (NER)
+* Switch to the **Entities** tab.
+* Inspect extracted entity chips organized by type:
+  * 👤 **People** (e.g. *Sarah Rodriguez*, *Michael Chen*, *David Kim*)
+  * 🏢 **Organizations** (e.g. *TechSupply Solutions*, *Meridian Financial*)
+  * 📅 **Dates** (e.g. *January 15, 2025*, *Q4 2024*)
+  * 💰 **Amounts** (e.g. *$24.7 million*, *$180,000*)
+  * 📍 **Locations** (e.g. *Austin*)
+
+### Step 7: Perform Semantic Search
 * Click **Search** in the sidebar.
-* Try natural language queries or click one of the quick suggestions:
-  - `"quarterly revenue and financial profit"`
-  - `"Sarah Rodriguez"`
-  - `"remote work policy"`
-* Note the **High / Medium / Low** confidence ranking badges and query match excerpts.
+* Test natural language business queries:
+  * `"quarterly revenue and financial profit"`
+  * `"employee remote work and vacation policy"`
+  * `"David Kim engineering architecture"`
+* Observe relevance ranking with **High / Medium / Low** confidence indicators and contextual matching excerpts.
 
-### 6. Generate an Executive HTML Report
+### Step 8: Generate Executive Report
 * Navigate to **Reports**.
-* Click **`✓ Select All`** (or pick specific documents).
-* Click **`📄 Generate Report`** to preview the in-app executive summary.
-* Click **`⬇️ Download HTML Report`** to export a standalone, print-ready HTML document.
-
----
-
-## 📁 Testing Manual Uploads
-
-A multi-format test corpus is provided in `sample_data/`:
-* `company_report.pdf` — Multi-page PDF financial report
-* `employee_policy.docx` — Microsoft Word HR policy handbook
-* `project_notes.txt` — Plain text engineering sprint minutes
-* `sales_summary.csv` — Tabular customer sales records
-
-To test manual processing:
-1. Navigate to **Upload**.
-2. Drag and drop any file from `sample_data/`.
-3. Click **`⚡ Process Documents`**.
+* Click **`✓ Select All`** and click **`📄 Generate Report`**.
+* Review the in-app executive summary and click **`⬇️ Download HTML Report`** to export a standalone, print-ready HTML document.
