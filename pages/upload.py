@@ -186,16 +186,15 @@ def _load_demo_workspace():
     st.markdown('<div class="section-label">Loading Demo Workspace</div>', unsafe_allow_html=True)
     st.markdown(
         '<div style="font-size:14px;color:#64748b;margin-bottom:16px">'
-        'Processing Acme Corporation documents…</div>',
+        'Processing Acme Corporation multi-format documents (PDF, DOCX, TXT, CSV)…</div>',
         unsafe_allow_html=True,
     )
 
     display_names = {
-        "acme_q4_report.txt":       ("📈", "Acme Q4 2024 Financial Report"),
-        "board_meeting_notes.txt":  ("📝", "Board Meeting Notes — January 2025"),
-        "employee_handbook.txt":    ("👥", "Employee Handbook 2025"),
-        "vendor_contract.txt":      ("⚖️", "TechSupply Solutions — Service Agreement"),
-        "customer_feedback.txt":    ("💬", "Customer Feedback Report Q4 2024"),
+        "company_report.pdf":    ("📈", "Acme Q4 Financial Report (PDF)"),
+        "employee_policy.docx":  ("👥", "Employee Policy Handbook (DOCX)"),
+        "project_notes.txt":     ("📝", "Sprint & Architecture Notes (TXT)"),
+        "sales_summary.csv":     ("📊", "Enterprise Sales Summary (CSV)"),
     }
 
     success_count = 0
@@ -232,7 +231,6 @@ def _load_demo_workspace():
                     unsafe_allow_html=True,
                 )
             else:
-                # Override display filename with clean label
                 doc.filename = fname
                 Workspace.add(doc)
                 progress_bar.progress(1.0)
@@ -249,7 +247,7 @@ def _load_demo_workspace():
         st.session_state["demo_loaded"]  = True
         st.session_state["workspace_name"] = config.DEMO_WORKSPACE_NAME
         st.success(
-            f"✅ Demo workspace loaded — {success_count} Acme Corporation documents ready."
+            f"✅ Demo workspace loaded — {success_count} multi-format Acme Corporation documents ready."
         )
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:

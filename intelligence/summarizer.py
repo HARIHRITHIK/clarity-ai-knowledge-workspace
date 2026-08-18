@@ -1,14 +1,14 @@
 """
-Extractive text summariser — no LLM, no API, fully offline.
+Extractive text summarizer — fully offline, deterministic sentence scoring.
 
-Algorithm (LSA-inspired sentence scoring):
-  1. Split text into sentences.
-  2. Build a TF-IDF matrix over sentences.
-  3. Score each sentence by the sum of its TF-IDF weights.
-  4. Select the top-N highest-scoring sentences.
-  5. Return them in original document order (coherent reading flow).
+Algorithm (TF-IDF Sentence Saliency Ranking):
+  1. Segment document text into sentences.
+  2. Build a TF-IDF term matrix over the sentence collection.
+  3. Score each sentence by the sum of its term TF-IDF saliency weights.
+  4. Select top-N highest scoring sentences.
+  5. Return selected sentences in original chronological order for coherent reading flow.
 
-This is reliable, deterministic, and fast enough to run on every upload.
+This provides deterministic, factual summaries directly from source text.
 """
 
 from __future__ import annotations

@@ -96,9 +96,8 @@ ENTITY_DISPLAY = {
 # ── Demo Workspace ────────────────────────────────────────────────────────────
 DEMO_WORKSPACE_NAME = "Acme Corporation"
 DEMO_DOCUMENT_PATHS = [
-    "sample_docs/acme_q4_report.txt",
-    "sample_docs/board_meeting_notes.txt",
-    "sample_docs/employee_handbook.txt",
-    "sample_docs/vendor_contract.txt",
-    "sample_docs/customer_feedback.txt",
+    "sample_data/company_report.pdf",
+    "sample_data/employee_policy.docx",
+    "sample_data/project_notes.txt",
+    "sample_data/sales_summary.csv",
 ]

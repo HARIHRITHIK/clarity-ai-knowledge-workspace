@@ -7,7 +7,7 @@
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.39+-FF4B4B?style=flat&logo=streamlit&logoColor=white)](https://streamlit.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 
-[**⚡ 2-Minute Recruiter Demo**](DEMO.md) • [**🏛️ System Architecture**](docs/ARCHITECTURE.md) • [**📁 Sample Corpus**](sample_data/)
+[**⚡ 2-Minute Demo Guide**](DEMO.md) • [**🏛️ System Architecture**](docs/ARCHITECTURE.md) • [**📁 Sample Corpus**](sample_data/)
 
 ---
 
@@ -17,28 +17,7 @@
 
 ---
 
-## 📸 Preview
-
-| Workspace Dashboard | Document Intelligence |
-|:---:|:---:|
-| ![Clarity Workspace](assets/screenshots/workspace.png) | ![Document Analysis](assets/screenshots/document-analysis.png) |
-
-| Semantic Search | Executive Report |
-|:---:|:---:|
-| ![Semantic Search](assets/screenshots/semantic-search.png) | ![Executive Report](assets/screenshots/executive-report.png) |
-
-### Adding Screenshots
-1. Open the [`assets/screenshots/`](assets/screenshots/) directory.
-2. Upload high-resolution application screenshots using the exact filenames:
-   * `workspace.png`
-   * `document-analysis.png`
-   * `semantic-search.png`
-   * `executive-report.png`
-3. Commit to `main` and the preview grid above will render them automatically.
-
----
-
-## Problem
+## 📌 Problem
 
 Organizations accumulate thousands of unstructured PDF reports, contracts, meeting notes, and spreadsheets. Retrieving actionable context typically involves:
 * Manually reading through lengthy multi-page files.
@@ -48,7 +27,7 @@ Organizations accumulate thousands of unstructured PDF reports, contracts, meeti
 
 ---
 
-## Solution
+## 💡 Solution
 
 **Clarity** is an offline-first document intelligence system. When documents are ingested, Clarity automatically parses text across multiple file formats, classifies domain categories, generates extractive summaries, extracts structured named entities, builds a semantic search index, and exports executive HTML reports—all running locally on CPU with zero external API dependencies.
 
@@ -58,18 +37,18 @@ Documents ➔ Text Extraction ➔ Classification ➔ Summarization ➔ NER ➔ S
 
 ---
 
-## Key Features
+## ✨ Key Features
 
 * **📊 Workspace Health Dashboard**: Real-time aggregated intelligence panel showing total documents, auto-detected categories, unique entities, and interactive Plotly distribution charts.
 * **🤖 Automated 5-Stage NLP Pipeline**: Sequentially transforms raw files into structured knowledge with per-stage progress feedback.
 * **🔍 Semantic Search Engine**: Natural language query search with cosine similarity relevance scoring and **High / Medium / Low** confidence indicators.
 * **📑 Entity Extraction & Fact Mining**: Identifies people, organizations, dates, currency amounts, and locations with frequency counts.
 * **📄 Executive Report Builder**: Select any combination of documents to compile and export a standalone, print-ready, XSS-sanitized HTML executive report.
-* **🚀 Instant Demo Workspace**: Pre-bundled enterprise dataset allowing instant evaluation in under 30 seconds.
+* **🚀 Instant Demo Workspace**: Pre-bundled multi-format enterprise dataset allowing instant evaluation in under 30 seconds.
 
 ---
 
-## Supported Formats
+## 📁 Supported Formats
 
 | Format | Extension | Processing Engine | Capabilities |
 |---|:---:|---|---|
@@ -80,19 +59,19 @@ Documents ➔ Text Extraction ➔ Classification ➔ Summarization ➔ NER ➔ S
 
 ---
 
-## 5-Stage NLP Pipeline
+## ⚙️ 5-Stage NLP Pipeline
 
 Every document passes through an isolated 5-stage transformation pipeline:
 
-1. **Stage 1: Text Extraction** — Dispatches file bytes to the appropriate format processor using an Abstract Factory pattern.
+1. **Stage 1: Text Extraction** — Dispatches file bytes to the appropriate format processor using an Abstract Factory pattern (`BaseProcessor`).
 2. **Stage 2: Domain Classification** — Computes TF-IDF keyword frequency vectors to categorize the document (e.g. *Financial Report*, *HR Policy*, *Contract / Legal*).
-3. **Stage 3: Extractive Summarization** — Ranks sentences via TF-IDF importance scoring to generate a factual 4-sentence summary and key statements.
+3. **Stage 3: Extractive Summarization** — Ranks sentences via TF-IDF term saliency scoring to generate a factual 4-sentence summary and key statements.
 4. **Stage 4: Named Entity Recognition** — Extracts structured entities (`PERSON`, `ORG`, `DATE`, `MONEY`, `GPE`) using spaCy with regex fallback patterns.
 5. **Stage 5: Semantic Indexing** — Computes dense vector embeddings using `sentence-transformers` (`all-MiniLM-L6-v2`) for vector space search.
 
 ---
 
-## Architecture
+## 🏛️ Architecture
 
 ```
                  ┌────────────────────────────────┐
@@ -116,7 +95,7 @@ Every document passes through an isolated 5-stage transformation pipeline:
                  ▼                               ▼
   ┌─────────────────────────────┐ ┌─────────────────────────────┐
   │ Stage 3: Extractive Summary │ │ Stage 4: Entity Recognition │
-  │ (LSA Sentence Importance)   │ │ (spaCy NER + Regex)         │
+  │ (TF-IDF Sentence Saliency)  │ │ (spaCy NER + Regex)         │
   └──────────────┬──────────────┘ └──────────────┬──────────────┘
                  │                               │
                  └───────────────┬───────────────┘
@@ -143,17 +122,17 @@ Every document passes through an isolated 5-stage transformation pipeline:
 
 ---
 
-## NLP Techniques
+## 🧠 NLP Techniques
 
-* **Extractive Summarization (LSA-Inspired)**: Scores sentences based on normalized TF-IDF word significance within the document. Selecting sentences directly from the source text guarantees factual determinism and avoids generative hallucinations.
+* **Extractive Summarization**: Scores sentences based on normalized TF-IDF word saliency within the document. Selecting sentences directly from the source text guarantees factual determinism and avoids generative hallucinations.
 * **Named Entity Recognition (NER)**: Leverages spaCy's `en_core_web_sm` statistical pipeline to extract domain entities, supplemented by deterministic regex patterns for monetary values and dates.
 * **Vector Space Embeddings**: Computes 384-dimensional dense semantic vectors using `sentence-transformers/all-MiniLM-L6-v2` for cross-document query matching.
 
 ---
 
-## Semantic Search
+## 🔍 Semantic Search
 
-The search engine compares the vector embedding of a natural language query against the stored document embeddings using **Cosine Similarity**:
+The search engine compares the vector embedding of a natural language query against stored document embeddings using **Cosine Similarity**:
 
 $$\text{Cosine Similarity} = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \|\mathbf{v}\|}$$
 
@@ -164,7 +143,7 @@ $$\text{Cosine Similarity} = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \
 
 ---
 
-## Fallback Strategy
+## 🛡️ Fallback Strategy
 
 To ensure zero-crash reliability on low-resource CPU environments:
 * **Dense Embedding Fallback**: If `sentence-transformers` model weights are unavailable or fail to load, search automatically falls back to **TF-IDF sparse vector cosine similarity**.
@@ -173,7 +152,7 @@ To ensure zero-crash reliability on low-resource CPU environments:
 
 ---
 
-## Technology Stack
+## 🛠️ Technology Stack
 
 | Layer | Technology | Purpose |
 |---|---|---|
@@ -188,7 +167,7 @@ To ensure zero-crash reliability on low-resource CPU environments:
 
 ---
 
-## Testing
+## 🧪 Testing
 
 The project includes an automated test suite covering all critical business paths:
 * File processors (PDF, DOCX, TXT, CSV text extraction and error boundaries)
@@ -203,17 +182,19 @@ pytest -v
 
 ---
 
-## Benchmarking
+## 📊 Benchmarking
 
-A reproducible performance benchmark script is included in `scripts/benchmark.py` to evaluate pipeline throughput and search latency:
+A reproducible performance benchmark script is included in `scripts/benchmark.py` to evaluate pipeline throughput and search latency across the bundled sample corpus.
 
 ```bash
 python scripts/benchmark.py
 ```
 
+*Note: Benchmark throughput depends on the host CPU architecture and memory bandwidth.*
+
 ---
 
-## Deployment
+## 🚀 Deployment
 
 ### Local Setup
 ```bash
@@ -235,7 +216,7 @@ streamlit run app.py
 
 ---
 
-## Limitations
+## ⚠️ Limitations
 
 * **In-Memory Storage**: Workspace data is managed in-memory per user session; refreshing the browser resets the active workspace.
 * **Single-Node Execution**: Ingestion runs synchronously on CPU without distributed task queues (e.g. Celery).
@@ -243,7 +224,7 @@ streamlit run app.py
 
 ---
 
-## Future Improvements
+## 🔮 Future Improvements
 
 * **v1.1**: Persistent SQLite / PostgreSQL database integration for multi-session workspace storage.
 * **v1.2**: Asynchronous background document ingestion queue with worker processes.
@@ -252,17 +233,6 @@ streamlit run app.py
 
 ---
 
-## Technical Interview Concepts
-
-When discussing this project in technical interviews, be prepared to explain:
-
-1. **Extractive vs. Generative NLP**: Why sentence ranking via TF-IDF was chosen over generative LLMs to guarantee factual consistency on financial and legal documents.
-2. **Dense vs. Sparse Search**: The trade-offs between sparse TF-IDF keyword matrices (exact keyword matching) and dense SentenceTransformer embeddings (semantic synonym matching).
-3. **Abstract Factory Architecture**: How `BaseProcessor` decouples file ingestion from pipeline execution.
-4. **Resilience & Graceful Degradation**: How multi-tier model fallbacks prevent unhandled exceptions on CPU-only infrastructure.
-
----
-
-## License
+## 📜 License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
