@@ -3,8 +3,8 @@
 > **Transform unstructured business documents into an organized, searchable intelligence workspace.**
 
 [![CI](https://github.com/HARIHRITHIK/clarity-ai-knowledge-workspace/actions/workflows/ci.yml/badge.svg)](https://github.com/HARIHRITHIK/clarity-ai-knowledge-workspace/actions)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://clarity-ai-knowledge-workspace-ctubssksgzly4wrfbcz6pn.streamlit.app/)
 [![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11-3776AB?style=flat&logo=python&logoColor=white)](https://python.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.39+-FF4B4B?style=flat&logo=streamlit&logoColor=white)](https://streamlit.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=flat)](LICENSE)
 
 [**⚡ 2-Minute Demo Guide**](DEMO.md) • [**🏛️ System Architecture**](docs/ARCHITECTURE.md) • [**📁 Sample Corpus**](sample_data/)
@@ -13,7 +13,9 @@
 
 ## 🚀 Live Demo
 
-> **Live Demo:** [ADD LIVE DEMO URL HERE]
+> 🔗 **Public URL:** [https://clarity-ai-knowledge-workspace-ctubssksgzly4wrfbcz6pn.streamlit.app/](https://clarity-ai-knowledge-workspace-ctubssksgzly4wrfbcz6pn.streamlit.app/)
+
+Click the link above or the badge to open the live application deployed on Streamlit Community Cloud.
 
 ---
 

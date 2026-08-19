@@ -1,4 +1,4 @@
-> **Live Demo:** [ADD LIVE DEMO URL HERE]
+> **Live Demo:** [https://clarity-ai-knowledge-workspace-ctubssksgzly4wrfbcz6pn.streamlit.app/](https://clarity-ai-knowledge-workspace-ctubssksgzly4wrfbcz6pn.streamlit.app/)
 
 ---
 
