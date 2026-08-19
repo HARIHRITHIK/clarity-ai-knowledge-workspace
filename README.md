@@ -17,6 +17,18 @@
 
 ---
 
+## 📸 Application Preview
+
+| **Workspace Dashboard & Analytics** | **Document Intelligence & Entity NER** |
+|:---:|:---:|
+| ![Workspace Dashboard](assets/screenshots/workspace.png) | ![Document Intelligence](assets/screenshots/document-analysis.png) |
+
+| **Natural Language Semantic Search** | **Executive HTML Report Builder** |
+|:---:|:---:|
+| ![Semantic Search](assets/screenshots/semantic-search.png) | ![Executive Report](assets/screenshots/executive-report.png) |
+
+---
+
 ## 📌 Problem
 
 Organizations accumulate thousands of unstructured PDF reports, contracts, meeting notes, and spreadsheets. Retrieving actionable context typically involves:
